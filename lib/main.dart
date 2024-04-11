@@ -27,23 +27,32 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   FirebaseFirestore db = FirebaseFirestore.instance;
-  var streaming_data;
-  var list_= [];
-  Future<void> _incrementCounter() async {
-    var querySnapshot = await db.collection("data_").get();
-    for (var doc in querySnapshot.docs) {
-      list_.add(doc['img']);
-      //print("${doc['img']} => ${doc.data()}");
-    }
-     print(list_);
+  List<String> list_ = [];
+  bool isLoading = false; // 로딩 상태 추적
+
+  @override
+  void initState() {
+    super.initState();
+    _loadData();
   }
 
+  Future<void> _loadData() async {
+    if (isLoading) return; // 이미 로딩 중이면 중복 실행 방지
+    setState(() => isLoading = true);
+    var querySnapshot = await db.collection("data_").get();
+    List<String> newList = [];
+    for (var doc in querySnapshot.docs) {
+      newList.add(doc['img']);
+    }
+    setState(() {
+      list_ = newList;
+      isLoading = false;
+    });
+  }
 
 
   // @override
    Widget build(BuildContext context) {
-
-       _incrementCounter(); // 함수 호출
 
     return MaterialApp(
       home: Scaffold(
@@ -52,11 +61,6 @@ class _MyAppState extends State<MyApp> {
         ),
         body:
         Container(child: grid_generator(context)),
-        floatingActionButton: FloatingActionButton(
-          onPressed: _incrementCounter,
-          tooltip: 'Increment',
-          child: const Icon(Icons.add),
-        ), // This trailing comma makes auto-formatting nicer for build methods.
       ),
     );
   }
@@ -64,16 +68,17 @@ class _MyAppState extends State<MyApp> {
 
 
   
-  Widget grid_generator(BuildContext context){
-    return
-      MasonryGridView.builder(
+  Widget grid_generator(BuildContext context) {
+    if (list_.isEmpty) { // list_가 비어 있는지 확인
+      return Center(child: CircularProgressIndicator()); // 로딩 인디케이터 표시
+    }
+    return MasonryGridView.builder(
       gridDelegate: SliverSimpleGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
-      itemCount:6,
-      itemBuilder: (context, index){
-        return ClipRRect(borderRadius: BorderRadius.circular(4),
-          //child: Image.asset('./assets/123.jpg'),
+      itemCount: list_.length, // itemCount를 list_의 길이로 설정
+      itemBuilder: (context, index) {
+        return ClipRRect(
+          borderRadius: BorderRadius.circular(4),
           child: Image.network(list_[index]),
-//         child: Image.network(list_[index]),
         );
       },
     );
