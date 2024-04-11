@@ -41,11 +41,11 @@ class _MyAppState extends State<MyApp> {
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
-          title: const Text('파이어베이스11테스트'),
+          title: const Text('파이어2베이스11테스트'),
         ),
         body: const Center(
           child: Text(
-            '여기 받아올11거에요.',
+            '여기 @@@받아올11거에요.',
           ),
         ),
         floatingActionButton: FloatingActionButton(

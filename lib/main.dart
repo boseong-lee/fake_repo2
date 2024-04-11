@@ -26,48 +26,37 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  final db = FirebaseFirestore.instance;
+  FirebaseFirestore db = FirebaseFirestore.instance;
   var streaming_data;
-
   var list_= [];
-  
-  @override
-  Widget build(BuildContext context) {
-    Future<void> _incrementCounter() async {
-      await db.collection("style_data").get().then((event) {
-        for (var doc in event.docs) {
-          list_.add(doc['img']);
-
-          // list_.addAll([doc['img'],doc['style_data']]);
-          // print("${doc['img']} => ${doc.data()}");
-        }
-
-        // print("--------------------------------------");
-        // print(list_);
-        // print("--------------------------------------");
-      });
+  Future<void> _incrementCounter() async {
+    var querySnapshot = await db.collection("data_").get();
+    for (var doc in querySnapshot.docs) {
+      list_.add(doc['img']);
+      //print("${doc['img']} => ${doc.data()}");
     }
-    
-  
-    // _incrementCounter();
+     print(list_);
+  }
+
+
+
+  // @override
+   Widget build(BuildContext context) {
+
+       _incrementCounter(); // 함수 호출
+
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
           title: const Text('파이어베이스22테스트'),
         ),
         body:
-        Container(
-        child: Image.asset('assets/123.jpg'),
-        )
-
-
-
-        // Container(child: grid_generator(context)),
-        // floatingActionButton: FloatingActionButton(
-        //   onPressed: _incrementCounter,
-        //   tooltip: 'Increment',
-        //   child: const Icon(Icons.add),
-        // ), // This trailing comma makes auto-formatting nicer for build methods.
+        Container(child: grid_generator(context)),
+        floatingActionButton: FloatingActionButton(
+          onPressed: _incrementCounter,
+          tooltip: 'Increment',
+          child: const Icon(Icons.add),
+        ), // This trailing comma makes auto-formatting nicer for build methods.
       ),
     );
   }
@@ -77,18 +66,14 @@ class _MyAppState extends State<MyApp> {
   
   Widget grid_generator(BuildContext context){
     return
-      // Container();
-
       MasonryGridView.builder(
       gridDelegate: SliverSimpleGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
-      itemCount:10,
+      itemCount:6,
       itemBuilder: (context, index){
-
-        return ClipRRect(
-          borderRadius: BorderRadius.circular(4),
-            child: Image.asset('./123.jpg',scale: 1,),
-         // child: Image.network(list_[index]),
-           //child: Image.network("http://source.unsplash.com/random?sig=$index"),
+        return ClipRRect(borderRadius: BorderRadius.circular(4),
+          //child: Image.asset('./assets/123.jpg'),
+          child: Image.network(list_[index]),
+//         child: Image.network(list_[index]),
         );
       },
     );
