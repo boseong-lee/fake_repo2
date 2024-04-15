@@ -27,7 +27,7 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   FirebaseFirestore db = FirebaseFirestore.instance;
-  List<String> list_ = [];
+  List<String> list_ = <String>[];
   bool isLoading = false; // 로딩 상태 추적
 
   @override
